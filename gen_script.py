@@ -9,7 +9,8 @@ MODIFIERS = [
     ['ALT', 'GUI'],
     ['CTRL', 'ALT', 'SHIFT'],
     ['CTRL', 'GUI'],
-    ['CTRL', 'GUI', 'SHIFT']
+    ['CTRL', 'GUI', 'SHIFT'],
+    ['CTRL', 'GUI', 'SHIFT', 'ALT']
 ]
 
 COMMON_KEYS = (
